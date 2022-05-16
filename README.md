@@ -17,9 +17,9 @@ AStorage is a web application for storing audio files and easy sharing it.
 
 ### Roles
 ##### User
-- [ ] Upload audio files (Direct or Drag'n'Drop).
-- [ ] Download audio files (Direct or Drag'n'Drop).
-- [ ] Listen to your audio files.
+- [x] Upload audio files (Direct or Drag'n'Drop).
+- [x] Download audio files (Direct or Drag'n'Drop).
+- [x] Listen to your audio files.
 - [ ] Listen to public audio files of another users.
 - [ ] Make audio files private or public.
 - [ ] Sharing audio files by links.
@@ -39,8 +39,8 @@ AStorage is a web application for storing audio files and easy sharing it.
 - [ ] Access to admin panel.
 
 ##### Guest
-- [ ] Download audio files.
-- [ ] Listen to public audio files of another users.
+- [x] Download audio files.
+- [x] Listen to public audio files of another users.
 
 
 

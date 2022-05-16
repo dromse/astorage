@@ -24,6 +24,18 @@ class AudioController {
       console.log(e.message)
     }
   }
+
+  async remove(req, res) {
+    try {
+      const { fileName } = req.params
+
+      AudioService.remove(fileName).then((message) =>
+        res.status(200).json({ message }),
+      )
+    } catch (e) {
+      console.log(e)
+    }
+  }
 }
 
 module.exports = new AudioController()

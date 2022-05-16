@@ -1,4 +1,5 @@
 const path = require('path')
+const fs = require('fs')
 
 class AudioService {
   // takes audio file and save it to static directory
@@ -22,6 +23,18 @@ class AudioService {
   // takes audio name and return path to file
   async download(fileName) {
     const pathToFile = path.resolve(__dirname, '..', 'static', fileName)
+    return pathToFile
+  }
+
+  // takes audio name and delete audio file in static directory
+  async remove(fileName) {
+    const pathToFile = path.resolve(__dirname, '..', 'static', fileName)
+    fs.unlink(pathToFile, err => {
+      if (err) {
+        return 'Deletion failed'
+      }
+    })
+
     return pathToFile
   }
 }
