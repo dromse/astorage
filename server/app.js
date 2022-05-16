@@ -12,15 +12,9 @@ const app = express()
 
 app.use(express.json())
 app.use(cors())
-
-// TODO: upload and download audio files in format mp3 and wav
 app.use(express.static(path.resolve(__dirname, 'static')))
 app.use(fileUpload({}))
 app.use('/api', router)
-
-app.get('/', (req, res) => {
-  res.status(200).json({ message: 'working!' })
-})
 
 const start = async () => {
   try {

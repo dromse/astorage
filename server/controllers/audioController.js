@@ -5,9 +5,9 @@ class AudioController {
     try {
       const { audio } = req.files
 
-      AudioService.upload(audio)
-
-      return res.status(200).json('Audio file was uploaded.')
+      AudioService.upload(audio).then((message) =>
+        res.status(200).json({ message }),
+      )
     } catch (e) {
       console.log(e.message)
     }
@@ -17,9 +17,9 @@ class AudioController {
     try {
       const { fileName } = req.params
 
-      pathToFile = AudioService.download(fileName)
-
-      res.status(200).download(pathToFile)
+      AudioService.download(fileName).then((pathToFile) =>
+        res.status(200).download(pathToFile),
+      )
     } catch (e) {
       console.log(e.message)
     }
