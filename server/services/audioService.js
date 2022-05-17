@@ -1,39 +1,51 @@
 const path = require('path')
 const fs = require('fs')
 
+const ApiError = require('../exceptions/apiError')
+const isFileExist = require('../utils/checkFileExist')
+const removeFile = require('../utils/removeFile')
+
 class AudioService {
   // takes audio file and save it to static directory
   async upload(audio) {
     // check file for audio file
-    const isMpeg = audio.mimetype === 'audio/mpeg' 
+    const isMpeg = audio.mimetype === 'audio/mpeg'
     const isWave = audio.mimetype === 'audio/wave'
     const isAudioFile = isMpeg || isWave
 
     if (!isAudioFile) {
-      return 'Not correct type. Must be mp3 or wav.'
+      throw ApiError.BadRequest('Not correct type. Must be mp3 or wav.')
     }
 
     const pathToFile = path.resolve(__dirname, '..', 'static', audio.name)
 
     audio.mv(pathToFile)
 
-    return 'Audio file was uploaded successfully.'
+    return pathToFile
   }
 
   // takes audio name and return path to file
   async download(fileName) {
     const pathToFile = path.resolve(__dirname, '..', 'static', fileName)
+
+    if (!(await exists(pathToFile))) {
+      throw ApiError.BadRequest('File does not exist.')
+    }
+
     return pathToFile
   }
 
   // takes audio name and delete audio file in static directory
   async remove(fileName) {
     const pathToFile = path.resolve(__dirname, '..', 'static', fileName)
-    fs.unlink(pathToFile, err => {
-      if (err) {
-        return 'Deletion failed'
-      }
-    })
+
+    if (!(await isFileExist(pathToFile))) {
+      throw ApiError.BadRequest('File does not exist.')
+    }
+
+    if (!(await removeFile(pathToFile))) {
+      throw ApiError.BadRequest('Error while deleting file.')
+    }
 
     return pathToFile
   }

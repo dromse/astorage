@@ -1,39 +1,37 @@
 const AudioService = require('../services/audioService')
 
 class AudioController {
-  async upload(req, res) {
+  async upload(req, res, next) {
     try {
       const { audio } = req.files
 
-      AudioService.upload(audio).then((message) =>
-        res.status(200).json({ message }),
-      )
+      const pathToFile = await AudioService.upload(audio)
+      res.status(200).json({ pathToFile })
     } catch (e) {
-      console.log(e.message)
+      next(e)
     }
   }
 
-  async download(req, res) {
+  async download(req, res, next) {
     try {
       const { fileName } = req.params
 
-      AudioService.download(fileName).then((pathToFile) =>
-        res.status(200).download(pathToFile),
-      )
+      const pathToFile = await AudioService.download(fileName)
+
+      res.status(200).download(pathToFile)
     } catch (e) {
-      console.log(e.message)
+      next(e)
     }
   }
 
-  async remove(req, res) {
+  async remove(req, res, next) {
     try {
       const { fileName } = req.params
 
-      AudioService.remove(fileName).then((message) =>
-        res.status(200).json({ message }),
-      )
+      const pathToFile = await AudioService.remove(fileName)
+      res.status(200).json({ pathToFile })
     } catch (e) {
-      console.log(e)
+      next(e)
     }
   }
 }
