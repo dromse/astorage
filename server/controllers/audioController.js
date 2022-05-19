@@ -14,9 +14,9 @@ class AudioController {
 
   async download(req, res, next) {
     try {
-      const { fileName } = req.params
+      const { fileId } = req.params
 
-      const pathToFile = await AudioService.download(fileName)
+      const pathToFile = await AudioService.download(fileId)
 
       res.status(200).download(pathToFile)
     } catch (e) {
@@ -26,10 +26,19 @@ class AudioController {
 
   async remove(req, res, next) {
     try {
-      const { fileName } = req.params
+      const { fileId } = req.params
 
-      const pathToFile = await AudioService.remove(fileName)
+      const pathToFile = await AudioService.remove(fileId)
       res.status(200).json({ pathToFile })
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  async getAll(req, res, next) {
+    try {
+      const audios = await AudioService.getAll()
+      res.status(200).json({ audios })
     } catch (e) {
       next(e)
     }
