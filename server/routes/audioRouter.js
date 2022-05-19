@@ -1,11 +1,11 @@
 const Router = require('express')
 
-const audioController = require('../controllers/audioController')
+const AudioController = require('../controllers/audioController')
 
 const router = new Router()
 
-router.post('/', audioController.upload)
-router.get('/:fileName', audioController.download)
-router.delete('/:fileName', audioController.remove)
+router.post('/', AudioController.upload)
+router.get('/:fileName', AudioController.download)
+router.delete('/:fileName', AudioController.remove)
 
 module.exports = router
