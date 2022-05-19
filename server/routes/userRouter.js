@@ -4,7 +4,6 @@ const UserController = require('../controllers/userController')
 
 const router = new Router()
 
-router.post('/', (req, res) => res.json('you here.'))
 router.post('/signup', UserController.signup)
 router.post('/login', UserController.login)
 router.post('/logout', UserController.logout)
