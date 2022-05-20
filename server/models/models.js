@@ -8,6 +8,17 @@ const User = sequelize.define('user', {
   role: { type: DataTypes.STRING, defaultValue: 'USER' },
 })
 
+const Audio = sequelize.define('audio', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  fileId: { type: DataTypes.STRING, unique: true, allowNull: false },
+  fileFormat: { type: DataTypes.STRING, allowNull: false },
+  visibility: { type: DataTypes.STRING, defaultValue: 'PUBLIC' },
+})
+
+// User.hasMany(Audio)
+// Audio.belongsTo(User)
+
 module.exports = {
   User,
+  Audio,
 }
