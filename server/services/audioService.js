@@ -1,45 +1,61 @@
 const path = require('path')
 const uuid = require('uuid')
 
+const { Audio } = require('../models/models')
 const ApiError = require('../exceptions/apiError')
+
 const isFileExist = require('../utils/checkFileExist')
 const removeFile = require('../utils/removeFile')
+const { isWave, isMpeg, isAudioFile } = require('../utils/checkFileFormat')
 
 const pathToStatic = path.resolve(__dirname, '..', 'static')
 
 class AudioService {
   // takes audio file and save it to static directory
-  async upload(audio) {
+  async upload(file) {
     // check file for audio file
-    const isMpeg = audio.mimetype === 'audio/mpeg'
-    const isWave = audio.mimetype === 'audio/wave'
-    const isAudioFile = isMpeg || isWave
-
-    let fileName
-
-    if (!isAudioFile) {
+    if (!isAudioFile(file)) {
       throw ApiError.BadRequest('Not correct type. Must be mp3 or wav.')
     }
 
-    if (isMpeg) {
-      fileName = uuid.v4() + '.mp3'
+    // set file format
+    let fileFormat
+
+    if (isMpeg(file)) {
+      fileFormat = 'mp3'
     }
 
-    if (isWave) {
-      fileName = uuid.v4() + '.wav'
+    if (isWave(file)) {
+      fileFormat = 'wav'
     }
 
+    // generate path to file and save it to static dir
+    const fileId = uuid.v4()
+    const fileName = `${fileId}.${fileFormat}`
     const pathToFile = path.resolve(pathToStatic, fileName)
+    file.mv(pathToFile)
 
-    audio.mv(pathToFile)
+    const audio = await Audio.create({
+      fileId,
+      fileFormat,
+    })
 
-    return fileName
+    return audio
   }
 
   // takes audio name and return path to file
-  async download(fileName) {
+  async download(fileId) {
+    // get data about file from db
+    const audio = await Audio.findOne({ where: { fileId } })
+    if (!audio) {
+      throw ApiError.BadRequest('File does not exist.')
+    }
+
+    // generate path to file
+    const fileName = `${audio.fileId}.${audio.fileFormat}`
     const pathToFile = path.resolve(pathToStatic, fileName)
 
+    // check for existence
     if (!(await isFileExist(pathToFile))) {
       throw ApiError.BadRequest('File does not exist.')
     }
@@ -48,18 +64,36 @@ class AudioService {
   }
 
   // takes audio name and delete audio file in static directory
-  async remove(fileName) {
+  async remove(fileId) {
+    // get data from db about file
+    const audio = await Audio.findOne({ where: { fileId } })
+    if (!audio) {
+      throw ApiError.BadRequest('File does not exist.')
+    }
+
+    // generate path to file
+    const fileName = `${audio.fileId}.${audio.fileFormat}`
     const pathToFile = path.resolve(pathToStatic, fileName)
 
+    // check for existence
     if (!(await isFileExist(pathToFile))) {
       throw ApiError.BadRequest('File does not exist.')
     }
 
+    // delete file
     if (!(await removeFile(pathToFile))) {
       throw ApiError.BadRequest('Error while deleting file.')
     }
 
-    return `${fileName} was deleted.`
+    // delete info about file in db
+    await audio.destroy()
+
+    return `${fileId} was deleted.`
+  }
+
+  async getAll() {
+    const audios = await Audio.findAll()
+    return audios
   }
 }
 
