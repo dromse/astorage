@@ -10,13 +10,7 @@ function generateToken(id, email, role) {
 }
 
 class UserService {
-  async singup(email, password) {
-    // Deprecated
-    // Need to delete when add express-validator
-    if (!email || !password) {
-      throw ApiError.BadRequest('Email or password is empty.')
-    }
-
+  async singup(email, password, name) {
     const candidate = await User.findOne({ where: { email } })
 
     if (candidate) {
@@ -26,6 +20,7 @@ class UserService {
     const hashPassword = await bcrypt.hash(password, 3)
 
     const user = await User.create({
+      name,
       email,
       password: hashPassword,
     })
@@ -52,11 +47,15 @@ class UserService {
     return token
   }
 
-  async logout(refreshToken) {}
-
   async getAll() {
     const users = await User.findAll()
     return users
+  }
+
+  async changeVisibility(user, visibility) {
+    const newUser = await User.findOne({ where: { id: user.id } })
+    newUser.update({ visibility })
+    return newUser
   }
 }
 
