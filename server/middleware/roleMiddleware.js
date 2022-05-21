@@ -8,8 +8,9 @@ module.exports = function (roles) {
 
     try {
       const token = req.headers.authorization.split(' ')[1]
+
       if (!token) {
-        return res.status(403).json({ message: 'User is not authorized.' })
+        res.status(403).json({ message: 'User is not authorized.' })
       }
 
       const { role } = jwt.verify(token, process.env.SECRET_KEY)
@@ -20,12 +21,14 @@ module.exports = function (roles) {
       }
 
       if (!hasRole) {
-        return res.status(403).json({ message: 'You does not have access.' })
+        res.status(403).json({ message: 'You does not have access.' })
       }
 
       next()
     } catch (err) {
-      return res.status(403).json({ message: 'User is not authorized.' })
+      return res
+        .status(403)
+        .json({ message: 'User is not authorized.', errors: err })
     }
   }
 }
