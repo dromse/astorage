@@ -1,15 +1,27 @@
 const Router = require('express')
 
 const AudioController = require('../controllers/audioController')
-const RoleMiddleware = require('../middleware/roleMiddleware')
+const RoleCheck = require('../middleware/roleMiddleware')
+const AuthCheck = require('../middleware/authMiddleware')
+
+const role = require('../enums/roleEnum')
 
 const router = new Router()
 
-router.post('/', RoleMiddleware(['USER']), AudioController.upload)
+router.post('/', AuthCheck, AudioController.upload)
 
-router.get('/getAll', RoleMiddleware(['USER']), AudioController.getAll)
-router.get('/:fileId', RoleMiddleware(['USER']), AudioController.download)
+router.get('/getAll', RoleCheck([role.USER]), AudioController.getAll)
+router.get('/', AuthCheck, AudioController.getUserAudios)
+router.get('/:fileId', AuthCheck, AudioController.download)
 
-router.delete('/:fileId', RoleMiddleware(['USER']), AudioController.remove)
+router.put(
+  '/changeVisibility/:fileId',
+  AuthCheck,
+  AudioController.changeVisibility,
+)
+
+router.put('/changeTitle/:fileId', AuthCheck, AudioController.changeTitle)
+
+router.delete('/:fileId', AuthCheck, AudioController.remove)
 
 module.exports = router
