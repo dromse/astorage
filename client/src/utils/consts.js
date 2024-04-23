@@ -1,0 +1,7 @@
+export const SIGN_UP_ROUTE = '/signup'
+export const LOGIN_ROUTE = '/login'
+export const MAIN_ROUTE = '/'
+export const MY_PROFILE_ROUTE = '/myprofile'
+export const UPLOAD_ROUTE = '/upload'
+export const SETTINGS_ROUTE = '/settings'
+export const PROFILE_ROUTE = '/profile/:id'
