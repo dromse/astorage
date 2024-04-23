@@ -11,4 +11,12 @@ module.exports = class ApiError extends Error {
   static BadRequest(message, errors = []) {
     return new ApiError(400, message, errors)
   }
+
+  static NotValidPassword() {
+    return new ApiError(400, 'NotValidPassword')
+  }
+
+  static Unauthorized() {
+    return new ApiError(401, 'Unauthorized')
+  }
 }

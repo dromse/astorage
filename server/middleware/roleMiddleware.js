@@ -1,4 +1,5 @@
-const jwt = require('jsonwebtoken')
+const ApiError = require('../exceptions/apiError')
+const TokenService = require('../services/tokenService')
 
 module.exports = function (roles) {
   return function (req, res, next) {
@@ -7,13 +8,13 @@ module.exports = function (roles) {
     }
 
     try {
-      const token = req.headers.authorization.split(' ')[1]
+      const accessToken = req.headers.authorization.split(' ')[1]
 
-      if (!token) {
-        res.status(403).json({ message: 'User is not authorized.' })
+      if (!accessToken) {
+        next(ApiError.Unauthorized())
       }
 
-      const { role } = jwt.verify(token, process.env.SECRET_KEY)
+      const { role } = TokenService.validateAccessToken(accessToken)
       let hasRole = false
 
       if (roles.includes(role)) {
@@ -21,14 +22,12 @@ module.exports = function (roles) {
       }
 
       if (!hasRole) {
-        res.status(403).json({ message: 'You does not have access.' })
+        next(ApiError.BadRequest('You does not have access.'))
       }
 
       next()
     } catch (err) {
-      return res
-        .status(403)
-        .json({ message: 'User is not authorized.', errors: err })
+      next(ApiError.Unauthorized())
     }
   }
 }
